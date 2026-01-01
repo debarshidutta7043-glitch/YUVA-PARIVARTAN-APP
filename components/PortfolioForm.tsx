@@ -15,6 +15,7 @@ interface PortfolioFormProps {
 
 const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initialData, zones, ltcs, departments }) => {
   const [step, setStep] = useState(1);
+  const [emailError, setEmailError] = useState('');
   const photoInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState<any>(initialData ? { ...initialData } : {
@@ -64,6 +65,17 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
   const [isGeneratingBio, setIsGeneratingBio] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(initialData?.photoUrl || null);
 
+  const validateEmail = (email: string) => {
+    if (!email) return "";
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email) ? "" : "Invalid email format (e.g., user@example.com)";
+  };
+
+  const handleEmailChange = (v: string) => {
+    setFormData({ ...formData, email: v });
+    setEmailError(validateEmail(v));
+  };
+
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -91,8 +103,21 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
     setIsGeneratingBio(false);
   };
 
+  const handleNextStep1 = () => {
+    const err = validateEmail(formData.email);
+    if (err) {
+      setEmailError(err);
+      return;
+    }
+    setStep(2);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (validateEmail(formData.email)) {
+      alert("Please fix the email format error before submitting.");
+      return;
+    }
     if (!formData.zoneId || !formData.ltcId) {
       alert("Please select Zone and Training Center (LTC)");
       return;
@@ -167,13 +192,16 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
                 <Input label="Birth Date" type="date" value={formData.dob} onChange={(v: string) => setFormData({...formData, dob: v})} required />
                 <Select label="Gender" options={['Male', 'Female', 'Other']} value={formData.gender} onChange={(v: string) => setFormData({...formData, gender: v})} />
               </div>
-              <Input label="Mobile" value={formData.mobile} onChange={(v: string) => setFormData({...formData, mobile: v})} required />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input label="Mobile" value={formData.mobile} onChange={(v: string) => setFormData({...formData, mobile: v})} required />
+                <Input label="Email" type="email" value={formData.email} onChange={handleEmailChange} error={emailError} />
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <Input label="District" value={formData.district} onChange={(v: string) => setFormData({...formData, district: v})} required />
                 <Input label="State" value={formData.state} onChange={(v: string) => setFormData({...formData, state: v})} required />
               </div>
               
-              <button type="button" onClick={() => setStep(2)} className="w-full py-5 bg-red-600 text-white rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-lg shadow-red-100 active:scale-95">Next Step</button>
+              <button type="button" onClick={handleNextStep1} className="w-full py-5 bg-red-600 text-white rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-lg shadow-red-100 active:scale-95">Next Step</button>
             </div>
           )}
 
@@ -282,17 +310,20 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
   );
 };
 
-const Input = ({ label, value, onChange, type = "text", required, placeholder }: any) => (
+const Input = ({ label, value, onChange, type = "text", required, placeholder, error }: any) => (
   <div className="space-y-1">
     <label className="text-[9px] font-black text-slate-300 uppercase tracking-widest px-1">{label} {required && "*"}</label>
     <input 
       required={required}
       type={type} 
-      className="w-full px-5 py-4 rounded-xl border-2 border-slate-50 focus:border-red-500 outline-none transition-all bg-slate-50 focus:bg-white text-slate-800 font-bold text-sm"
+      className={`w-full px-5 py-4 rounded-xl border-2 outline-none transition-all font-bold text-sm ${
+        error ? 'border-red-500 bg-red-50' : 'border-slate-50 bg-slate-50 focus:border-red-500 focus:bg-white'
+      } text-slate-800`}
       value={value}
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
     />
+    {error && <p className="text-[8px] font-bold text-red-500 uppercase px-1">{error}</p>}
   </div>
 );
 
