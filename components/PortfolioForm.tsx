@@ -1,16 +1,19 @@
 
 import React, { useState, useRef, useMemo } from 'react';
-import { Department, StudentPortfolio, StudentSkill } from '../types';
-import { DEPARTMENTS, ZONES, LTCS } from '../constants';
+import { Department, StudentPortfolio, StudentSkill, Zone, LTC } from '../types';
 import { generateProfessionalBio } from '../services/gemini';
 
 interface PortfolioFormProps {
   onSubmit: (data: Omit<StudentPortfolio, 'id' | 'status' | 'joinedDate' | 'lastUpdated'>) => void;
   onClose: () => void;
   initialData?: StudentPortfolio;
+  // Added master data props to define available options
+  zones: Zone[];
+  ltcs: LTC[];
+  departments: Department[];
 }
 
-const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initialData }) => {
+const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initialData, zones, ltcs, departments }) => {
   const [step, setStep] = useState(1);
   const photoInputRef = useRef<HTMLInputElement>(null);
   
@@ -27,7 +30,8 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
     preferredLocation: '',
     zoneId: '',
     ltcId: '',
-    department: 'Agriculture' as Department,
+    // Use departmentId instead of department name string
+    departmentId: departments[0]?.id || '',
     courseTitle: '',
     duration: '',
     educationLevel: '10th',
@@ -53,8 +57,8 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
   });
 
   const filteredLTCs = useMemo(() => {
-    return LTCS.filter(ltc => ltc.zoneId === formData.zoneId);
-  }, [formData.zoneId]);
+    return ltcs.filter(ltc => ltc.zoneId === formData.zoneId);
+  }, [formData.zoneId, ltcs]);
 
   const [skills] = useState<StudentSkill[]>(initialData?.skills || []);
   const [isGeneratingBio, setIsGeneratingBio] = useState(false);
@@ -81,7 +85,8 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
   const handleGenerateBio = async () => {
     if (!formData.fullName) return;
     setIsGeneratingBio(true);
-    const bio = await generateProfessionalBio(formData.fullName, formData.courseTitle, [formData.department]);
+    const deptName = departments.find(d => d.id === formData.departmentId)?.name || 'General';
+    const bio = await generateProfessionalBio(formData.fullName, formData.courseTitle || deptName, [deptName]);
     setFormData({ ...formData, bio });
     setIsGeneratingBio(false);
   };
@@ -134,10 +139,10 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
                 <div className="space-y-4">
                   <Select 
                     label="Operation Zone" 
-                    options={ZONES.map(z => z.name)} 
-                    value={ZONES.find(z => z.id === formData.zoneId)?.name || ''} 
-                    onChange={v => {
-                      const zone = ZONES.find(z => z.name === v);
+                    options={zones.map(z => z.name)} 
+                    value={zones.find(z => z.id === formData.zoneId)?.name || ''} 
+                    onChange={(v: string) => {
+                      const zone = zones.find(z => z.name === v);
                       setFormData({...formData, zoneId: zone?.id || '', ltcId: ''});
                     }} 
                     required 
@@ -147,7 +152,7 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
                     options={filteredLTCs.map(l => l.name)} 
                     value={filteredLTCs.find(l => l.id === formData.ltcId)?.name || ''} 
                     disabled={!formData.zoneId}
-                    onChange={v => {
+                    onChange={(v: string) => {
                       const ltc = filteredLTCs.find(l => l.name === v);
                       setFormData({...formData, ltcId: ltc?.id || ''});
                     }} 
@@ -156,16 +161,16 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
                 </div>
               </div>
 
-              <Input label="Full Name" value={formData.fullName} onChange={v => setFormData({...formData, fullName: v})} required />
-              <Input label="Father's Name" value={formData.fatherName} onChange={v => setFormData({...formData, fatherName: v})} required />
+              <Input label="Full Name" value={formData.fullName} onChange={(v: string) => setFormData({...formData, fullName: v})} required />
+              <Input label="Father's Name" value={formData.fatherName} onChange={(v: string) => setFormData({...formData, fatherName: v})} required />
               <div className="grid grid-cols-2 gap-4">
-                <Input label="Birth Date" type="date" value={formData.dob} onChange={v => setFormData({...formData, dob: v})} required />
-                <Select label="Gender" options={['Male', 'Female', 'Other']} value={formData.gender} onChange={v => setFormData({...formData, gender: v})} />
+                <Input label="Birth Date" type="date" value={formData.dob} onChange={(v: string) => setFormData({...formData, dob: v})} required />
+                <Select label="Gender" options={['Male', 'Female', 'Other']} value={formData.gender} onChange={(v: string) => setFormData({...formData, gender: v})} />
               </div>
-              <Input label="Mobile" value={formData.mobile} onChange={v => setFormData({...formData, mobile: v})} required />
+              <Input label="Mobile" value={formData.mobile} onChange={(v: string) => setFormData({...formData, mobile: v})} required />
               <div className="grid grid-cols-2 gap-4">
-                <Input label="District" value={formData.district} onChange={v => setFormData({...formData, district: v})} required />
-                <Input label="State" value={formData.state} onChange={v => setFormData({...formData, state: v})} required />
+                <Input label="District" value={formData.district} onChange={(v: string) => setFormData({...formData, district: v})} required />
+                <Input label="State" value={formData.state} onChange={(v: string) => setFormData({...formData, state: v})} required />
               </div>
               
               <button type="button" onClick={() => setStep(2)} className="w-full py-5 bg-red-600 text-white rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-lg shadow-red-100 active:scale-95">Next Step</button>
@@ -175,11 +180,19 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
           {step === 2 && (
             <div className="space-y-6">
               <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Education & Course</h3>
-              <Select label="Training Sector" options={DEPARTMENTS.map(d => d.name)} value={formData.department} onChange={v => setFormData({...formData, department: v})} />
-              <Input label="Course Title" value={formData.courseTitle} onChange={v => setFormData({...formData, courseTitle: v})} required placeholder="e.g. Basic Tailoring" />
-              <Select label="Highest Education" options={['10th', '12th', 'ITI', 'Diploma', 'Graduate']} value={formData.educationLevel} onChange={v => setFormData({...formData, educationLevel: v})} />
-              <Input label="Institute Name" value={formData.instituteName} onChange={v => setFormData({...formData, instituteName: v})} required />
-              <Input label="Year of Passing" value={formData.passingYear} onChange={v => setFormData({...formData, passingYear: v})} required />
+              <Select 
+                label="Training Sector" 
+                options={departments.map(d => d.name)} 
+                value={departments.find(d => d.id === formData.departmentId)?.name || ''} 
+                onChange={(v: string) => {
+                  const dept = departments.find(d => d.name === v);
+                  setFormData({...formData, departmentId: dept?.id || ''});
+                }} 
+              />
+              <Input label="Course Title" value={formData.courseTitle} onChange={(v: string) => setFormData({...formData, courseTitle: v})} required placeholder="e.g. Basic Tailoring" />
+              <Select label="Highest Education" options={['10th', '12th', 'ITI', 'Diploma', 'Graduate']} value={formData.educationLevel} onChange={(v: string) => setFormData({...formData, educationLevel: v})} />
+              <Input label="Institute Name" value={formData.instituteName} onChange={(v: string) => setFormData({...formData, instituteName: v})} required />
+              <Input label="Year of Passing" value={formData.passingYear} onChange={(v: string) => setFormData({...formData, passingYear: v})} required />
               <div className="bg-slate-50 p-6 rounded-3xl space-y-4">
                  <p className="text-[10px] font-black text-slate-400 uppercase">Subjects Studied:</p>
                  <Check label="Maths" active={formData.studiedMaths} onToggle={() => setFormData({...formData, studiedMaths: !formData.studiedMaths})} />
@@ -219,7 +232,7 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
                    ))}
                  </div>
               </div>
-              <Select label="Typing Speed" options={['Below 20 WPM', '20–30', '30+']} value={formData.typingSpeed} onChange={v => setFormData({...formData, typingSpeed: v})} />
+              <Select label="Typing Speed" options={['Below 20 WPM', '20–30', '30+']} value={formData.typingSpeed} onChange={(v: string) => setFormData({...formData, typingSpeed: v})} />
               <div className="bg-red-50 p-6 rounded-3xl space-y-4">
                  <p className="text-[10px] font-black text-red-400 uppercase">English Level:</p>
                  <Check label="Read" active={formData.languages.english.read} onToggle={() => setFormData({...formData, languages: {...formData.languages, english: {...formData.languages.english, read: !formData.languages.english.read}}})} />
@@ -236,7 +249,7 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
           {step === 4 && (
             <div className="space-y-6">
               <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Work & Docs</h3>
-              <Select label="Availability" options={['Full-time', 'Part-time', 'Shift work']} value={formData.availability} onChange={v => setFormData({...formData, availability: v})} />
+              <Select label="Availability" options={['Full-time', 'Part-time', 'Shift work']} value={formData.availability} onChange={(v: string) => setFormData({...formData, availability: v})} />
               <div className="bg-slate-50 p-6 rounded-3xl space-y-4">
                  <p className="text-[10px] font-black text-slate-400 uppercase">Documents Check:</p>
                  <Check label="Aadhaar Card" active={formData.documents.aadhaar} onToggle={() => setFormData({...formData, documents: {...formData.documents, aadhaar: !formData.documents.aadhaar}})} />

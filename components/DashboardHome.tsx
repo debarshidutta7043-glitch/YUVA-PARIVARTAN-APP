@@ -1,16 +1,19 @@
 
 import React, { useMemo } from 'react';
 import { StudentPortfolio, Zone, LTC } from '../types';
-import { NGO_INFO, ZONES, LTCS } from '../constants';
+import { NGO_INFO } from '../constants';
 
 interface DashboardHomeProps {
   portfolios: StudentPortfolio[];
   isAdmin: boolean;
   onNavigate: (view: 'List' | 'Dashboard' | 'Home') => void;
   onAction: (type: 'add_student' | 'add_ltc' | 'reports') => void;
+  // Added master data props for accurate dynamic statistics
+  zones: Zone[];
+  ltcs: LTC[];
 }
 
-const DashboardHome: React.FC<DashboardHomeProps> = ({ portfolios, isAdmin, onNavigate, onAction }) => {
+const DashboardHome: React.FC<DashboardHomeProps> = ({ portfolios, isAdmin, onNavigate, onAction, zones, ltcs }) => {
   
   const stats = useMemo(() => {
     const readiness = {
@@ -41,10 +44,10 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ portfolios, isAdmin, onNa
       else gender.other++;
     });
 
-    const zoneCounts = ZONES.map(z => ({
+    const zoneCounts = zones.map(z => ({
       ...z,
       studentCount: portfolios.filter(p => p.zoneId === z.id).length,
-      ltcCount: LTCS.filter(l => l.zoneId === z.id).length
+      ltcCount: ltcs.filter(l => l.zoneId === z.id).length
     }));
 
     const districts = new Set(portfolios.map(p => p.district));
@@ -55,10 +58,10 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ portfolios, isAdmin, onNa
       gender,
       activeDistricts: districts.size,
       zoneSummary: zoneCounts,
-      totalLTCs: LTCS.length,
-      totalZones: ZONES.length
+      totalLTCs: ltcs.length,
+      totalZones: zones.length
     };
-  }, [portfolios]);
+  }, [portfolios, zones, ltcs]);
 
   return (
     <div className="space-y-12 pb-16 animate-in fade-in duration-700">
@@ -271,16 +274,6 @@ const ProgressBar = ({ label, count, total, color, description }: any) => {
     </div>
   );
 };
-
-const LegendItem = ({ color, label, percentage }: any) => (
-  <div className="flex items-center justify-between w-full">
-    <div className="flex items-center gap-3">
-       <div className={`w-3 h-3 rounded-full ${color}`}></div>
-       <span className="text-[10px] font-black text-slate-600 uppercase tracking-tight">{label}</span>
-    </div>
-    <span className="text-xs font-black text-slate-800">{percentage}</span>
-  </div>
-);
 
 const ActionButton = ({ icon, label, primary, onClick }: any) => (
   <button 

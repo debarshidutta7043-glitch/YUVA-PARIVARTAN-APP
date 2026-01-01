@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { StudentPortfolio, PortfolioStatus } from '../types';
-import { DEPARTMENTS, ZONES, LTCS } from '../constants';
+import { StudentPortfolio, PortfolioStatus, Department, Zone, LTC } from '../types';
 
 interface PortfolioCardProps {
   portfolio: StudentPortfolio;
@@ -9,12 +8,26 @@ interface PortfolioCardProps {
   onReject?: (id: string) => void;
   onClick?: (portfolio: StudentPortfolio) => void;
   isAdminView?: boolean;
+  // Added master data props to ensure dynamic updates from admin settings
+  departments: Department[];
+  zones: Zone[];
+  ltcs: LTC[];
 }
 
-const PortfolioCard: React.FC<PortfolioCardProps> = ({ portfolio, onApprove, onReject, onClick, isAdminView }) => {
-  const deptInfo = DEPARTMENTS.find(d => d.name === portfolio.department);
-  const zone = ZONES.find(z => z.id === portfolio.zoneId);
-  const ltc = LTCS.find(l => l.id === portfolio.ltcId);
+const PortfolioCard: React.FC<PortfolioCardProps> = ({ 
+  portfolio, 
+  onApprove, 
+  onReject, 
+  onClick, 
+  isAdminView,
+  departments,
+  zones,
+  ltcs
+}) => {
+  // Use departmentId for lookup instead of non-existent department property
+  const deptInfo = departments.find(d => d.id === portfolio.departmentId);
+  const zone = zones.find(z => z.id === portfolio.zoneId);
+  const ltc = ltcs.find(l => l.id === portfolio.ltcId);
 
   const getJobReadyStatus = () => {
     const hasDocuments = portfolio.documents.aadhaar && portfolio.documents.bankAccount;
@@ -52,8 +65,8 @@ const PortfolioCard: React.FC<PortfolioCardProps> = ({ portfolio, onApprove, onR
               alt={portfolio.fullName} 
               className="w-16 h-16 rounded-2xl object-cover border-2 border-white shadow-md"
             />
-            <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-lg border-2 border-white flex items-center justify-center text-[8px] ${deptInfo?.color} text-white`}>
-              <i className={`fas ${deptInfo?.icon}`}></i>
+            <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-lg border-2 border-white flex items-center justify-center text-[8px] ${deptInfo?.color || 'bg-slate-500'} text-white`}>
+              <i className={`fas ${deptInfo?.icon || 'fa-user'}`}></i>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1">

@@ -1,20 +1,10 @@
 
-export type Department = 
-  | 'Agriculture' 
-  | 'Apparel' 
-  | 'Automotive' 
-  | 'Banking & Finance' 
-  | 'Beauty & Wellness' 
-  | 'Construction' 
-  | 'Electronics & IT' 
-  | 'Food Processing' 
-  | 'Handicrafts' 
-  | 'Healthcare' 
-  | 'Hospitality' 
-  | 'ITES' 
-  | 'Management' 
-  | 'Retail' 
-  | 'Telecom';
+export type Department = {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+};
 
 export type PortfolioStatus = 'Pending' | 'Approved' | 'Rejected';
 
@@ -34,6 +24,14 @@ export interface LTC {
   zoneId: string;
 }
 
+export interface DashboardConfig {
+  showJobReadiness: boolean;
+  showRegionalImpact: boolean;
+  showDiversity: boolean;
+  showLtcDistribution: boolean;
+  customTitle: string;
+}
+
 export interface StudentPortfolio {
   id: string;
   fullName: string;
@@ -47,11 +45,10 @@ export interface StudentPortfolio {
   state: string;
   preferredLocation: string;
   
-  // Zone & LTC Mapping
   zoneId: string;
   ltcId: string;
-
-  department: Department;
+  departmentId: string; // Changed to ID reference
+  
   courseTitle: string;
   duration: string;
   
@@ -92,9 +89,4 @@ export interface StudentPortfolio {
   certificateUrl?: string;
   status: PortfolioStatus;
   lastUpdated: string;
-}
-
-export interface AppState {
-  portfolios: StudentPortfolio[];
-  isAdmin: boolean;
 }

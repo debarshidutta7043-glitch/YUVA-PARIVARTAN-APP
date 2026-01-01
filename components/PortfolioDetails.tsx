@@ -1,16 +1,18 @@
 
 import React from 'react';
-import { StudentPortfolio } from '../types';
-import { ZONES, LTCS } from '../constants';
+import { StudentPortfolio, Zone, LTC } from '../types';
 
 interface PortfolioDetailsProps {
   portfolio: StudentPortfolio;
   onClose: () => void;
+  // Added master data props to fix lookups for dynamic data
+  zones: Zone[];
+  ltcs: LTC[];
 }
 
-const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, onClose }) => {
-  const zone = ZONES.find(z => z.id === portfolio.zoneId);
-  const ltc = LTCS.find(l => l.id === portfolio.ltcId);
+const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, onClose, zones, ltcs }) => {
+  const zone = zones.find(z => z.id === portfolio.zoneId);
+  const ltc = ltcs.find(l => l.id === portfolio.ltcId);
 
   const getJobReadyLevel = () => {
     let score = 0;
