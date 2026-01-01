@@ -47,7 +47,7 @@ export interface StudentPortfolio {
   
   zoneId: string;
   ltcId: string;
-  departmentId: string; // Changed to ID reference
+  departmentId: string;
   
   courseTitle: string;
   duration: string;

@@ -12,7 +12,6 @@ type Role = 'Admin' | 'Viewer';
 type ViewMode = 'Home' | 'List' | 'Dashboard' | 'Settings';
 
 const App: React.FC = () => {
-  // MASTER DATA STATE - Initialized from renamed constants
   const [zones, setZones] = useState<Zone[]>(ZONES);
   const [ltcs, setLtcs] = useState<LTC[]>(LTCS);
   const [departments, setDepartments] = useState<Department[]>(DEPARTMENTS);
@@ -30,7 +29,7 @@ const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('Home');
 
   useEffect(() => {
-    const saved = localStorage.getItem('yp_master_v1');
+    const saved = localStorage.getItem('yp_master_v2');
     if (saved) {
       const parsed = JSON.parse(saved);
       if (parsed.zones) setZones(parsed.zones);
@@ -43,14 +42,13 @@ const App: React.FC = () => {
         setPortfolios(INITIAL_STUDENTS);
       }
     } else {
-      // If no local storage exists at all, use initial mock data
       setPortfolios(INITIAL_STUDENTS);
     }
   }, []);
 
   useEffect(() => {
     const payload = { zones, ltcs, departments, dbConfig, portfolios };
-    localStorage.setItem('yp_master_v1', JSON.stringify(payload));
+    localStorage.setItem('yp_master_v2', JSON.stringify(payload));
   }, [zones, ltcs, departments, dbConfig, portfolios]);
 
   const filteredPortfolios = useMemo(() => {
@@ -128,6 +126,7 @@ const App: React.FC = () => {
             onNavigate={(v) => setViewMode(v)}
             zones={zones}
             ltcs={ltcs}
+            config={dbConfig}
             onAction={(type) => {
                if (type === 'add_student') { setEditingPortfolio(null); setShowForm(true); }
                else if (type === 'add_ltc') setViewMode('Settings');
