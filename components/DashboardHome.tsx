@@ -107,38 +107,18 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ portfolios, isAdmin, onNa
 
       {/* NEW SECTION: READINESS PIPELINE & DIVERSITY */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        {/* Readiness Pipeline */}
         <section className="bg-white rounded-[3rem] p-10 border border-red-50 shadow-xl shadow-red-100/30">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Employment Pipeline</h3>
             <i className="fas fa-chart-line text-red-500"></i>
           </div>
           <div className="space-y-6">
-            <ProgressBar 
-              label="Fully Job Ready" 
-              count={stats.readiness.ready} 
-              total={stats.totalStudents} 
-              color="bg-green-500" 
-              description="Aadhaar + Bank + Digital Literacy" 
-            />
-            <ProgressBar 
-              label="Partially Ready" 
-              count={stats.readiness.partially} 
-              total={stats.totalStudents} 
-              color="bg-blue-500" 
-              description="Missing 1-2 key employment criteria" 
-            />
-            <ProgressBar 
-              label="In Training" 
-              count={stats.readiness.training} 
-              total={stats.totalStudents} 
-              color="bg-orange-500" 
-              description="Focusing on core vocational skills" 
-            />
+            <ProgressBar label="Fully Job Ready" count={stats.readiness.ready} total={stats.totalStudents} color="bg-green-500" description="Aadhaar + Bank + Digital Literacy" />
+            <ProgressBar label="Partially Ready" count={stats.readiness.partially} total={stats.totalStudents} color="bg-blue-500" description="Missing 1-2 key employment criteria" />
+            <ProgressBar label="In Training" count={stats.readiness.training} total={stats.totalStudents} color="bg-orange-500" description="Focusing on core vocational skills" />
           </div>
         </section>
 
-        {/* Diversity & Reach */}
         <section className="bg-white rounded-[3rem] p-10 border border-red-50 shadow-xl shadow-red-100/30">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Diversity & Inclusion</h3>
@@ -164,68 +144,47 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ portfolios, isAdmin, onNa
         </section>
       </div>
 
-      {/* SECTION 3 & 4: LOCATION OVERVIEW & DISTRIBUTION INSIGHTS */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        
-        {/* Zone Overview */}
-        <section className="lg:col-span-2 space-y-6">
-          <div className="flex items-center justify-between px-2">
-             <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Regional Impact</h3>
-             <button onClick={() => onNavigate('Dashboard')} className="text-xs font-black text-red-600 uppercase tracking-widest hover:underline">Full Report</button>
+      {/* RE-IMPLEMENTED REACH US SECTION FROM PHOTOS - REFINED FOR OVERFLOW */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+        {/* Photo 1 Implementation: Email Address */}
+        <div className="bg-white rounded-[2.5rem] p-6 sm:p-10 border border-red-50 shadow-xl shadow-red-100/20 flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
+          <div className="relative flex items-center justify-center flex-shrink-0">
+            <div className="absolute h-full w-[2px] bg-yellow-400"></div>
+            <div className="w-16 h-12 border-2 border-yellow-400 rounded-lg bg-white relative z-10 flex items-center justify-center">
+               <div className="absolute top-0 left-0 right-0 h-1/2 border-b-2 border-yellow-400 transform skew-y-12 origin-top-left"></div>
+               <div className="absolute top-0 left-0 right-0 h-1/2 border-b-2 border-yellow-400 transform -skew-y-12 origin-top-right"></div>
+               <i className="fas fa-envelope text-yellow-400 opacity-20"></i>
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {stats.zoneSummary.map(zone => (
-              <div 
-                key={zone.id} 
-                className="bg-white p-8 rounded-[2.5rem] border border-red-50 shadow-xl shadow-red-100/30 hover:shadow-red-200/40 transition-all cursor-pointer group active:scale-[0.98]"
-                onClick={() => onNavigate('List')}
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center text-xl group-hover:bg-red-600 group-hover:text-white transition-colors">
-                    <i className="fas fa-map-marked-alt"></i>
-                  </div>
-                  <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Level 1 Reach</span>
-                </div>
-                <h4 className="text-2xl font-black text-slate-800 mb-2">{zone.name}</h4>
-                <div className="flex gap-6 mt-4">
-                  <div className="space-y-1">
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Centers</p>
-                    <p className="text-lg font-black text-red-600">{zone.ltcCount}</p>
-                  </div>
-                  <div className="w-px h-10 bg-slate-50"></div>
-                  <div className="space-y-1">
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Trainees</p>
-                    <p className="text-lg font-black text-slate-800">{zone.studentCount}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="text-center sm:text-left min-w-0 flex-1 overflow-hidden">
+            <p className="text-lg sm:text-xl text-slate-600 font-medium">Email Address</p>
+            <p className="text-xl md:text-2xl font-black text-slate-800 mt-1 break-all sm:break-normal truncate">
+              {NGO_INFO.email}
+            </p>
           </div>
-        </section>
+        </div>
 
-        {/* Quick Insights / Donut Chart Simplified */}
-        <section className="space-y-6">
-           <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight px-2">Enrollment Split</h3>
-           <div className="bg-white rounded-[2.5rem] p-8 border border-red-50 shadow-xl shadow-red-100/30 flex flex-col items-center">
-              <div className="relative w-48 h-48 mb-10 flex items-center justify-center">
-                 <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
-                    <path className="text-slate-50" strokeDasharray="100, 100" strokeWidth="3" fill="none" stroke="currentColor" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                    <path className="text-red-600" strokeDasharray="65, 100" strokeWidth="3" strokeLinecap="round" fill="none" stroke="currentColor" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                    <path className="text-indigo-500" strokeDasharray="30, 100" strokeDashoffset="-65" strokeWidth="3" strokeLinecap="round" fill="none" stroke="currentColor" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                 </svg>
-                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-3xl font-black text-slate-800">{stats.totalStudents}</span>
-                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Total Active</span>
-                 </div>
+        {/* Photo 2 Implementation: Reach Us (Dark Sidebar Style) */}
+        <div className="bg-slate-800 rounded-[2.5rem] p-6 sm:p-10 shadow-2xl flex flex-col justify-center overflow-hidden">
+           <h3 className="text-2xl font-black text-yellow-400 mb-6">Reach Us</h3>
+           <div className="space-y-6">
+              <div className="space-y-1">
+                 <p className="text-xl sm:text-2xl text-white font-medium">Contact Us</p>
+                 <p className="text-xl sm:text-2xl text-white font-medium">Our Center</p>
               </div>
-              <div className="w-full space-y-4">
-                 <LegendItem color="bg-red-600" label="West Zone" percentage="65%" />
-                 <LegendItem color="bg-indigo-500" label="North Zone" percentage="30%" />
-                 <LegendItem color="bg-slate-200" label="Others" percentage="5%" />
+              <div className="space-y-4 pt-4 border-t border-slate-700">
+                 {NGO_INFO.phones.map(phone => (
+                   <div key={phone} className="flex items-center gap-4 group cursor-pointer overflow-hidden">
+                      <div className="w-10 h-10 border border-white/20 rounded-xl flex items-center justify-center group-hover:bg-yellow-400 group-hover:border-yellow-400 transition-all flex-shrink-0">
+                        <i className="fas fa-phone text-white text-sm group-hover:text-slate-800"></i>
+                      </div>
+                      <span className="text-lg sm:text-xl md:text-2xl font-bold text-white group-hover:text-yellow-400 transition-colors truncate">{phone}</span>
+                   </div>
+                 ))}
               </div>
            </div>
-        </section>
-      </div>
+        </div>
+      </section>
 
       {/* SECTION 5: QUICK ACTIONS (Admin Focused) */}
       <section className="bg-slate-900 rounded-[3rem] p-10 shadow-2xl shadow-slate-200 text-white relative overflow-hidden">
@@ -262,10 +221,10 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ portfolios, isAdmin, onNa
             </div>
             <div className="space-y-2">
               <p className="text-xs font-black text-slate-800 uppercase tracking-widest">Empowerment through Excellence</p>
-              <div className="flex items-center justify-center gap-4 text-slate-400">
-                 <a href="mailto:info@yuvaparivartan.org" className="text-[10px] font-bold hover:text-red-600 transition-colors">info@yuvaparivartan.org</a>
-                 <span className="w-1.5 h-1.5 bg-slate-200 rounded-full"></span>
-                 <p className="text-[10px] font-bold">+91 22 2345 6789</p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-slate-400">
+                 <a href={`mailto:${NGO_INFO.email}`} className="text-[10px] font-bold hover:text-red-600 transition-colors">{NGO_INFO.email}</a>
+                 <span className="hidden sm:block w-1.5 h-1.5 bg-slate-200 rounded-full"></span>
+                 <p className="text-[10px] font-bold">{NGO_INFO.phones[0]}</p>
               </div>
               <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mt-4">Registration ID: {NGO_INFO.regNo}</p>
             </div>

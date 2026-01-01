@@ -8,7 +8,9 @@ export const NGO_INFO = {
   established: '1998',
   regions: 'Maharashtra, Gujarat, Karnataka, Uttar Pradesh, Bihar',
   focusAreas: ['Skill Development', 'Livelihood Training', 'Youth Empowerment'],
-  regNo: 'MH/1234/NGO/98'
+  regNo: 'MH/1234/NGO/98',
+  email: 'info@yuvaparivartan.org',
+  phones: ['+91 8828170103', '+91 8828059189']
 };
 
 export const ZONES: Zone[] = [
