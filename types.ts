@@ -6,7 +6,15 @@ export type Department = {
   color: string;
 };
 
+// Define Role type to resolve import error in App.tsx
+export type Role = 'Admin' | 'Viewer';
+
 export type PortfolioStatus = 'Pending' | 'Approved' | 'Rejected';
+export type PlacementStatus = 'Placed' | 'Unplaced' | 'In Process';
+export type EmploymentType = 'Full-time' | 'Contract' | 'Apprenticeship';
+export type SalaryBand = '₹8k–₹12k' | '₹12k–₹18k' | '₹18k+';
+export type RecruitmentStatus = 'Planned' | 'Interview Ongoing' | 'Offers Released' | 'Joining Completed';
+export type OfferStatus = 'Pending' | 'Accepted' | 'Rejected' | 'Expired';
 
 export interface StudentSkill {
   name: string;
@@ -24,11 +32,40 @@ export interface LTC {
   zoneId: string;
 }
 
+export interface Company {
+  id: string;
+  name: string;
+  industry: 'IT' | 'Manufacturing' | 'BFSI' | 'Retail' | 'Logistics' | 'Healthcare';
+  location: string;
+  logo: string;
+}
+
+export interface JobOpening {
+  id: string;
+  companyId: string;
+  title: string;
+  salary: number;
+  openings: number;
+  status: RecruitmentStatus;
+  visitDate: string;
+  mode: 'Onsite' | 'Online' | 'Hybrid';
+}
+
+export interface JobOffer {
+  id: string;
+  studentId: string;
+  openingId: string;
+  status: OfferStatus;
+  timestamp: string;
+  digitalConsent?: string;
+}
+
 export interface DashboardConfig {
   showJobReadiness: boolean;
   showRegionalImpact: boolean;
   showDiversity: boolean;
   showLtcDistribution: boolean;
+  publicVisibility: boolean; // Toggle for what Viewers see
   customTitle: string;
 }
 
@@ -51,18 +88,15 @@ export interface StudentPortfolio {
   
   courseTitle: string;
   duration: string;
+  batchYear: number;
+  batchStartDate?: string;
+  batchEndDate?: string;
   
   educationLevel: '10th' | '12th' | 'ITI' | 'Diploma' | 'Graduate';
   instituteName: string;
   passingYear: string;
-  studiedMaths: boolean;
-  studiedEnglish: boolean;
-  studiedComputers: boolean;
 
   basicComputerKnowledge: boolean;
-  knowsTyping: boolean;
-  knowsMouseKeyboard: boolean;
-  knowsFileHandling: boolean;
   softwareKnown: string[];
   typingSpeed: 'Below 20 WPM' | '20–30' | '30+';
 
@@ -73,20 +107,25 @@ export interface StudentPortfolio {
   };
 
   experience: 'Farm work' | 'Shop helper' | 'Office helper' | 'None';
-  willingToLearn: boolean;
-  availability: 'Full-time' | 'Part-time' | 'Shift work';
-
   documents: {
     aadhaar: boolean;
     bankAccount: boolean;
     educationCertificate: boolean;
   };
 
+  // Placement Data
+  placementStatus: PlacementStatus;
+  companyName?: string;
+  jobRole?: string;
+  employmentType?: EmploymentType;
+  monthlySalary?: number;
+  salaryBand?: SalaryBand;
+  unplacedReason?: string;
+
   bio: string;
   skills: StudentSkill[];
   joinedDate: string;
   photoUrl: string;
-  certificateUrl?: string;
   status: PortfolioStatus;
   lastUpdated: string;
 }

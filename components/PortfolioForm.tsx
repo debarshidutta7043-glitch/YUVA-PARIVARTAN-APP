@@ -1,13 +1,12 @@
 
 import React, { useState, useRef, useMemo } from 'react';
-import { Department, StudentPortfolio, StudentSkill, Zone, LTC } from '../types';
+import { Department, StudentPortfolio, StudentSkill, Zone, LTC, PlacementStatus, EmploymentType, SalaryBand } from '../types';
 import { generateProfessionalBio } from '../services/gemini';
 
 interface PortfolioFormProps {
   onSubmit: (data: Omit<StudentPortfolio, 'id' | 'status' | 'joinedDate' | 'lastUpdated'>) => void;
   onClose: () => void;
   initialData?: StudentPortfolio;
-  // Added master data props to define available options
   zones: Zone[];
   ltcs: LTC[];
   departments: Department[];
@@ -31,7 +30,6 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
     preferredLocation: '',
     zoneId: '',
     ltcId: '',
-    // Use departmentId instead of department name string
     departmentId: departments[0]?.id || '',
     courseTitle: '',
     duration: '',
@@ -52,6 +50,17 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
     willingToLearn: true,
     availability: 'Full-time',
     documents: { aadhaar: false, bankAccount: false, educationCertificate: false },
+    placementStatus: 'Unplaced',
+    companyName: '',
+    jobRole: '',
+    employmentType: 'Full-time',
+    placementCity: '',
+    joiningDate: '',
+    monthlySalary: 0,
+    salaryBand: '₹8k–₹12k',
+    incentives: false,
+    accommodation: false,
+    unplacedReason: '',
     bio: '',
     photoUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Date.now()}`,
     certificateUrl: ''
@@ -131,7 +140,7 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
         <div className="p-6 bg-red-600 flex items-center justify-between text-white">
           <div className="flex items-center gap-3">
              <i className="fas fa-user-edit"></i>
-             <h2 className="font-black uppercase text-xs tracking-widest">{initialData ? 'Edit Profile' : `Step ${step} of 4`}</h2>
+             <h2 className="font-black uppercase text-xs tracking-widest">{initialData ? 'Edit Profile' : `Step ${step} of 5`}</h2>
           </div>
           <button onClick={onClose} className="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center">
             <i className="fas fa-times"></i>
@@ -158,7 +167,6 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
                 <p className="text-[8px] font-black text-red-400 uppercase mt-2">Upload Photo</p>
               </div>
 
-              {/* Zone and LTC Selection */}
               <div className="bg-yellow-50 p-6 rounded-3xl space-y-4 border border-yellow-100">
                 <p className="text-[10px] font-black text-orange-900 uppercase tracking-widest">Training Center Assignment</p>
                 <div className="space-y-4">
@@ -295,6 +303,43 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
               </div>
               <div className="flex gap-4">
                 <button type="button" onClick={() => setStep(3)} className="flex-1 py-5 border-2 border-slate-100 rounded-2xl text-slate-400 font-black uppercase text-[10px] tracking-widest">Back</button>
+                <button type="button" onClick={() => setStep(5)} className="flex-[2] py-5 bg-slate-900 text-white rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-lg active:scale-95">Placement Info</button>
+              </div>
+            </div>
+          )}
+
+          {step === 5 && (
+            <div className="space-y-6">
+              <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Placement Outcome</h3>
+              <Select label="Status" options={['Placed', 'Unplaced', 'In Process']} value={formData.placementStatus} onChange={(v: string) => setFormData({...formData, placementStatus: v})} />
+              
+              {formData.placementStatus === 'Placed' && (
+                <div className="space-y-4 animate-in slide-in-from-top-4">
+                   <Input label="Company Name" value={formData.companyName} onChange={(v: string) => setFormData({...formData, companyName: v})} required />
+                   <Input label="Job Role" value={formData.jobRole} onChange={(v: string) => setFormData({...formData, jobRole: v})} required />
+                   <div className="grid grid-cols-2 gap-4">
+                      <Select label="Employment" options={['Full-time', 'Contract', 'Apprenticeship']} value={formData.employmentType} onChange={(v: string) => setFormData({...formData, employmentType: v})} />
+                      <Input label="Joining Date" type="date" value={formData.joiningDate} onChange={(v: string) => setFormData({...formData, joiningDate: v})} />
+                   </div>
+                   <div className="grid grid-cols-2 gap-4">
+                      <Input label="Monthly Salary (₹)" type="number" value={formData.monthlySalary} onChange={(v: string) => setFormData({...formData, monthlySalary: parseInt(v) || 0})} />
+                      <Select label="Salary Band" options={['₹8k–₹12k', '₹12k–₹18k', '₹18k+']} value={formData.salaryBand} onChange={(v: string) => setFormData({...formData, salaryBand: v})} />
+                   </div>
+                   <div className="flex gap-4 p-4 bg-slate-50 rounded-2xl">
+                      <Check label="Incentives" active={formData.incentives} onToggle={() => setFormData({...formData, incentives: !formData.incentives})} />
+                      <Check label="Accommodation" active={formData.accommodation} onToggle={() => setFormData({...formData, accommodation: !formData.accommodation})} />
+                   </div>
+                </div>
+              )}
+
+              {formData.placementStatus === 'Unplaced' && (
+                <div className="space-y-4 animate-in slide-in-from-top-4">
+                   <Select label="Reason for Unplaced" options={['Absentee', 'Not Selected', 'Awaiting Interview', 'Family Issues', 'Higher Studies']} value={formData.unplacedReason} onChange={(v: string) => setFormData({...formData, unplacedReason: v})} />
+                </div>
+              )}
+
+              <div className="flex gap-4">
+                <button type="button" onClick={() => setStep(4)} className="flex-1 py-5 border-2 border-slate-100 rounded-2xl text-slate-400 font-black uppercase text-[10px] tracking-widest">Back</button>
                 <button type="submit" className="flex-[2] py-5 bg-red-600 text-white rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-red-200 active:scale-95">{initialData ? 'Update Profile' : 'Register Profile'}</button>
               </div>
             </div>
