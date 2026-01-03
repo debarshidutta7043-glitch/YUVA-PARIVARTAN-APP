@@ -28,26 +28,35 @@ const PlacementAnalytics: React.FC<AnalyticsProps> = ({ portfolios, isAdmin, dep
     });
 
     // Top Companies (Admin Only details)
-    const companies: Record<string, { count: number; avgSal: number }> = {};
+    const companiesStats: Record<string, { count: number; avgSal: number }> = {};
     portfolios.filter(p => p.placementStatus === 'Placed').forEach(p => {
       const co = p.companyName || 'Unknown';
-      if (!companies[co]) companies[co] = { count: 0, avgSal: 0 };
-      companies[co].count++;
-      companies[co].avgSal += p.monthlySalary || 0;
+      if (!companiesStats[co]) companiesStats[co] = { count: 0, avgSal: 0 };
+      companiesStats[co].count++;
+      companiesStats[co].avgSal += p.monthlySalary || 0;
     });
 
     // Cast Object.entries to ensure division operands are treated as numbers by TypeScript.
-    const sortedCompanies = (Object.entries(companies) as [string, { count: number; avgSal: number }][])
-      .map(([name, data]) => ({ name, count: data.count, avgSal: data.avgSal / data.count }))
+    const sortedCompanies = (Object.entries(companiesStats) as [string, { count: number; avgSal: number }][])
+      .map(([name, data]) => ({ name, count: data.count, avgSal: data.avgSal / (data.count || 1) }))
       .sort((a, b) => b.count - a.count);
 
     return { trend, industryStats, sortedCompanies };
   }, [portfolios, departments]);
 
-  const maxTrend = Math.max(...analytics.trend.map(t => t.total));
+  const maxTrend = Math.max(...analytics.trend.map(t => t.total), 1);
+
+  if (portfolios.length === 0) {
+    return (
+      <div className="py-20 text-center bg-white rounded-[3rem] shadow-xl border border-red-50">
+        <i className="fas fa-chart-line text-slate-100 text-6xl mb-6"></i>
+        <p className="font-black text-slate-400 uppercase tracking-widest">No placement data available yet</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-12 pb-20 animate-in fade-in duration-1000">
+    <div className="space-y-12 animate-in fade-in duration-1000">
       {/* 5-Year Growth Chart */}
       <section className="bg-white rounded-[3rem] p-10 shadow-2xl shadow-red-100/30 border border-red-50">
         <div className="flex justify-between items-center mb-10">
@@ -76,7 +85,7 @@ const PlacementAnalytics: React.FC<AnalyticsProps> = ({ portfolios, isAdmin, dep
                      {t.placed} Placed / {t.total} Total
                   </div>
                   <div className="w-full max-w-[30px] bg-red-100 rounded-t-lg relative" style={{ height: `${hTotal}%` }}>
-                     <div className="absolute bottom-0 w-full bg-emerald-500 rounded-t-lg transition-all duration-1000" style={{ height: `${(t.placed / t.total) * 100}%` }} />
+                     <div className="absolute bottom-0 w-full bg-emerald-500 rounded-t-lg transition-all duration-1000" style={{ height: `${(t.placed / (t.total || 1)) * 100}%` }} />
                   </div>
                   <span className="mt-4 text-[10px] font-black text-slate-400">{t.year}</span>
                </div>
@@ -92,7 +101,8 @@ const PlacementAnalytics: React.FC<AnalyticsProps> = ({ portfolios, isAdmin, dep
            <div className="space-y-6">
              {/* Explicitly cast Object.entries to ensure 'count' is typed as a number for the arithmetic operation. */}
              {(Object.entries(analytics.industryStats) as [string, number][]).map(([name, count]) => {
-               const percentage = (count / portfolios.filter(p => p.placementStatus === 'Placed').length) * 100;
+               const totalPlaced = portfolios.filter(p => p.placementStatus === 'Placed').length || 1;
+               const percentage = (count / totalPlaced) * 100;
                return (
                  <div key={name} className="group">
                     <div className="flex justify-between items-end mb-2">
@@ -124,7 +134,6 @@ const PlacementAnalytics: React.FC<AnalyticsProps> = ({ portfolios, isAdmin, dep
                   {isAdmin && (
                     <div className="text-right">
                        <p className="text-[8px] font-black text-slate-300 uppercase">Avg CTC</p>
-                       {/* Division with typed co.avgSal to satisfy the compiler. */}
                        <p className="text-xs font-black text-emerald-600">₹{Math.round(co.avgSal/1000)}K</p>
                     </div>
                   )}

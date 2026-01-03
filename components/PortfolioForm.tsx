@@ -299,7 +299,7 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
                       <i className={`fas ${isGeneratingBio ? 'fa-spinner fa-spin' : 'fa-magic'}`}></i> AI Bio
                     </button>
                  </div>
-                 <textarea rows={3} className="w-full p-4 bg-slate-50 border-2 border-slate-50 rounded-2xl outline-none focus:border-red-500 font-medium italic text-sm" value={formData.bio} onChange={e => setFormData({...formData, bio: e.target.value})} placeholder="Tell us about yourself..." />
+                 <textarea rows={3} className="w-full p-4 bg-slate-50 border-2 border-slate-50 rounded-2xl outline-none focus:border-red-500 font-medium italic text-sm" value={formData.bio || ''} onChange={e => setFormData({...formData, bio: e.target.value})} placeholder="Tell us about yourself..." />
               </div>
               <div className="flex gap-4">
                 <button type="button" onClick={() => setStep(3)} className="flex-1 py-5 border-2 border-slate-100 rounded-2xl text-slate-400 font-black uppercase text-[10px] tracking-widest">Back</button>
@@ -317,6 +317,7 @@ const PortfolioForm: React.FC<PortfolioFormProps> = ({ onSubmit, onClose, initia
                 <div className="space-y-4 animate-in slide-in-from-top-4">
                    <Input label="Company Name" value={formData.companyName} onChange={(v: string) => setFormData({...formData, companyName: v})} required />
                    <Input label="Job Role" value={formData.jobRole} onChange={(v: string) => setFormData({...formData, jobRole: v})} required />
+                   <Input label="Placement City" value={formData.placementCity} onChange={(v: string) => setFormData({...formData, placementCity: v})} required />
                    <div className="grid grid-cols-2 gap-4">
                       <Select label="Employment" options={['Full-time', 'Contract', 'Apprenticeship']} value={formData.employmentType} onChange={(v: string) => setFormData({...formData, employmentType: v})} />
                       <Input label="Joining Date" type="date" value={formData.joiningDate} onChange={(v: string) => setFormData({...formData, joiningDate: v})} />
@@ -364,7 +365,7 @@ const Input = ({ label, value, onChange, type = "text", required, placeholder, e
       className={`w-full px-5 py-4 rounded-xl border-2 outline-none transition-all font-bold text-sm ${
         error ? 'border-red-500 bg-red-50' : 'border-slate-50 bg-slate-50 focus:border-red-500 focus:bg-white'
       } text-slate-800`}
-      value={value}
+      value={value || ''}
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
     />
@@ -379,7 +380,7 @@ const Select = ({ label, options, value, onChange, disabled }: any) => (
       <select 
         disabled={disabled}
         className={`w-full px-5 py-4 rounded-xl border-2 border-slate-50 focus:border-red-500 outline-none appearance-none bg-slate-50 focus:bg-white font-bold text-slate-800 text-sm ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-        value={value}
+        value={value || ''}
         onChange={e => onChange(e.target.value)}
       >
         <option value="">Select Option</option>

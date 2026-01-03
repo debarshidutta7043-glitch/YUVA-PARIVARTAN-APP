@@ -8,6 +8,7 @@ import PortfolioDetails from './components/PortfolioDetails';
 import DashboardHome from './components/DashboardHome';
 import AdminSettings from './components/AdminSettings';
 import PlacementAnalytics from './components/PlacementAnalytics';
+import PlacementStats from './components/PlacementStats';
 import JobPipeline from './components/JobPipeline';
 import DigitalOffers from './components/DigitalOffers';
 
@@ -21,7 +22,6 @@ const App: React.FC = () => {
   const [portfolios, setPortfolios] = useState<StudentPortfolio[]>([]);
   const [companies] = useState<Company[]>(MOCK_COMPANIES);
 
-  // Default Job Openings for Pipeline
   const [openings] = useState<JobOpening[]>([
     { id: 'j1', companyId: 'c1', title: 'Assembly Line Tech', salary: 18000, openings: 25, status: 'Planned', visitDate: '2024-06-15', mode: 'Onsite' },
     { id: 'j2', companyId: 'c2', title: 'Banking Assistant', salary: 22000, openings: 10, status: 'Interview Ongoing', visitDate: '2024-05-20', mode: 'Hybrid' },
@@ -144,7 +144,10 @@ const App: React.FC = () => {
         )}
 
         {viewMode === 'Analytics' && (
-          <PlacementAnalytics portfolios={portfolios} isAdmin={isAdmin} departments={departments} zones={zones} />
+          <div className="space-y-16">
+            <PlacementAnalytics portfolios={portfolios} isAdmin={isAdmin} departments={departments} zones={zones} />
+            <PlacementStats portfolios={portfolios} zones={zones} ltcs={ltcs} departments={departments} />
+          </div>
         )}
 
         {viewMode === 'Pipeline' && isAdmin && (
@@ -170,11 +173,12 @@ const App: React.FC = () => {
 
         {viewMode === 'List' && (
           <div className="animate-in slide-in-from-bottom-6 duration-500">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
+            <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-10">
                <div className="md:col-span-2 relative">
                   <i className="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-red-300"></i>
                   <input type="text" placeholder="Search by name..." className="w-full pl-14 pr-6 py-4 bg-white border-2 border-red-50 rounded-2xl outline-none focus:border-red-500 shadow-lg shadow-red-100/30 font-bold" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
                </div>
+               <SelectFilter value={activeFilter} onChange={setActiveFilter} options={departments} label="All Categories" />
                <SelectFilter value={zoneFilter} onChange={setZoneFilter} options={zones} label="All Zones" />
                <SelectFilter value={ltcFilter} onChange={setLtcFilter} options={ltcs.filter(l => zoneFilter === 'All' || l.zoneId === zoneFilter)} label="All Centers" />
             </div>
@@ -192,6 +196,12 @@ const App: React.FC = () => {
                  />
                ))}
             </div>
+            {filteredPortfolios.length === 0 && (
+              <div className="py-20 text-center text-slate-400">
+                <i className="fas fa-search text-4xl mb-4"></i>
+                <p className="font-black uppercase text-xs tracking-widest">No trainees found matching filters</p>
+              </div>
+            )}
           </div>
         )}
       </main>

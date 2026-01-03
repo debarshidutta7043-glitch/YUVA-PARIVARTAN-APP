@@ -63,12 +63,12 @@ const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, onClose,
           {/* Training Center Tagline */}
           <div className="flex flex-col items-center gap-2 p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
              <div className="flex items-center gap-6">
-               <div className="flex flex-col items-center">
+               <div className="flex flex-col items-center text-center">
                   <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Zone</span>
                   <span className="text-sm font-black text-slate-800">{zone?.name || 'Unassigned'}</span>
                </div>
                <div className="h-8 w-px bg-slate-200" />
-               <div className="flex flex-col items-center">
+               <div className="flex flex-col items-center text-center">
                   <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Training Center (LTC)</span>
                   <span className="text-sm font-black text-slate-800">{ltc?.name || 'Unassigned'}</span>
                </div>
@@ -83,6 +83,24 @@ const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, onClose,
              <StatBox icon="fa-graduation-cap" label="Education" value={portfolio.educationLevel} />
           </div>
 
+          {/* Placement Section (New) */}
+          {portfolio.placementStatus === 'Placed' && (
+            <ProfileSection title="Recruitment & Placement" icon="fa-briefcase">
+               <div className="bg-emerald-50/50 p-6 rounded-3xl border border-emerald-100/50 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <DetailItem label="Employer" value={portfolio.companyName} />
+                  <DetailItem label="Job Role" value={portfolio.jobRole} />
+                  <DetailItem label="Location" value={portfolio.placementCity || portfolio.preferredLocation} />
+                  <DetailItem label="Joining Date" value={portfolio.joiningDate} />
+                  <DetailItem label="Employment Type" value={portfolio.employmentType} />
+                  <DetailItem label="Salary Band" value={portfolio.salaryBand} />
+                  <div className="sm:col-span-2 flex flex-wrap gap-4 pt-2">
+                     <CheckBadge label="Accomodation" active={portfolio.accommodation} />
+                     <CheckBadge label="Incentives" active={portfolio.incentives} />
+                  </div>
+               </div>
+            </ProfileSection>
+          )}
+
           {/* Detailed Sections */}
           <div className="space-y-8">
             <ProfileSection title="Personal & Contact" icon="fa-user">
@@ -91,7 +109,7 @@ const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, onClose,
                 <DetailItem label="Gender" value={portfolio.gender} />
                 <DetailItem label="Email" value={portfolio.email} />
                 <DetailItem label="Home Village" value={portfolio.village} />
-                <DetailItem label="Preferred Work Location" value={portfolio.preferredLocation} />
+                <DetailItem label="Work Preferences" value={portfolio.preferredLocation} />
               </div>
             </ProfileSection>
 
