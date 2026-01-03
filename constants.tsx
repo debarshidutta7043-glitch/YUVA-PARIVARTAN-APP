@@ -1,4 +1,5 @@
 
+
 import { Department, Zone, LTC, DashboardConfig, StudentPortfolio, Company, JobOpening } from './types';
 
 export const NGO_INFO = {
@@ -87,11 +88,17 @@ export const generateMassData = (): StudentPortfolio[] => {
       educationLevel: '12th',
       instituteName: 'Rural College',
       passingYear: (year - 1).toString(),
+      // Fix: Added new mandatory mock values
+      studiedMaths: Math.random() > 0.3,
+      studiedEnglish: Math.random() > 0.4,
+      studiedComputers: true,
       basicComputerKnowledge: true,
       softwareKnown: ['Excel', 'Word'],
       typingSpeed: '20–30',
       languages: { local: true, hindi: true, english: { read: true, write: true, speak: false } },
       experience: 'None',
+      willingToLearn: true,
+      availability: 'Full-time',
       documents: { aadhaar: true, bankAccount: true, educationCertificate: true },
       placementStatus: isPlaced ? 'Placed' : (i % 10 === 0 ? 'In Process' : 'Unplaced'),
       companyName: isPlaced ? company.name : undefined,
@@ -99,6 +106,9 @@ export const generateMassData = (): StudentPortfolio[] => {
       employmentType: 'Full-time',
       monthlySalary: isPlaced ? (10000 + (Math.random() * 15000)) : 0,
       salaryBand: isPlaced ? '₹12k–₹18k' : '₹8k–₹12k',
+      joiningDate: isPlaced ? `${year}-04-01` : undefined,
+      incentives: isPlaced ? Math.random() > 0.5 : false,
+      accommodation: isPlaced ? Math.random() > 0.5 : false,
       bio: 'Ready to contribute and learn.',
       skills: [{ name: 'Punctuality', level: 'Advanced' }],
       joinedDate: `${year}-01-15`,

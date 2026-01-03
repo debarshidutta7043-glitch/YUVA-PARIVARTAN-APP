@@ -1,17 +1,17 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { StudentPortfolio, Department, Zone, LTC, DashboardConfig, Role, Company } from './types';
+import { StudentPortfolio, Department, Zone, LTC, DashboardConfig, Role, Company, JobOpening } from './types';
 import { NGO_INFO, ZONES, LTCS, DEPARTMENTS, INITIAL_DASHBOARD_CONFIG, INITIAL_STUDENTS, MOCK_COMPANIES } from './constants';
 import PortfolioCard from './components/PortfolioCard';
 import PortfolioForm from './components/PortfolioForm';
 import PortfolioDetails from './components/PortfolioDetails';
 import DashboardHome from './components/DashboardHome';
 import AdminSettings from './components/AdminSettings';
-import PlacementStats from './components/PlacementStats';
 import PlacementAnalytics from './components/PlacementAnalytics';
 import JobPipeline from './components/JobPipeline';
+import DigitalOffers from './components/DigitalOffers';
 
-type ViewMode = 'Home' | 'List' | 'Dashboard' | 'Settings' | 'Placements' | 'Analytics' | 'Pipeline';
+type ViewMode = 'Home' | 'List' | 'Dashboard' | 'Settings' | 'Placements' | 'Analytics' | 'Pipeline' | 'Offers';
 
 const App: React.FC = () => {
   const [zones, setZones] = useState<Zone[]>(ZONES);
@@ -21,7 +21,13 @@ const App: React.FC = () => {
   const [portfolios, setPortfolios] = useState<StudentPortfolio[]>([]);
   const [companies] = useState<Company[]>(MOCK_COMPANIES);
 
-  // Utilize the Role type imported from types.ts
+  // Default Job Openings for Pipeline
+  const [openings] = useState<JobOpening[]>([
+    { id: 'j1', companyId: 'c1', title: 'Assembly Line Tech', salary: 18000, openings: 25, status: 'Planned', visitDate: '2024-06-15', mode: 'Onsite' },
+    { id: 'j2', companyId: 'c2', title: 'Banking Assistant', salary: 22000, openings: 10, status: 'Interview Ongoing', visitDate: '2024-05-20', mode: 'Hybrid' },
+    { id: 'j3', companyId: 'c3', title: 'Retail Associate', salary: 15000, openings: 40, status: 'Offers Released', visitDate: '2024-04-10', mode: 'Onsite' },
+  ]);
+
   const [role, setRole] = useState<Role>('Viewer');
   const [showForm, setShowForm] = useState(false);
   const [editingPortfolio, setEditingPortfolio] = useState<StudentPortfolio | null>(null);
@@ -33,7 +39,7 @@ const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('Home');
 
   useEffect(() => {
-    const saved = localStorage.getItem('yp_master_v4');
+    const saved = localStorage.getItem('yp_master_v5');
     if (saved) {
       const parsed = JSON.parse(saved);
       if (parsed.zones) setZones(parsed.zones);
@@ -52,7 +58,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const payload = { zones, ltcs, departments, dbConfig, portfolios };
-    localStorage.setItem('yp_master_v4', JSON.stringify(payload));
+    localStorage.setItem('yp_master_v5', JSON.stringify(payload));
   }, [zones, ltcs, departments, dbConfig, portfolios]);
 
   const filteredPortfolios = useMemo(() => {
@@ -116,6 +122,7 @@ const App: React.FC = () => {
           <NavTab label="Home" active={viewMode === 'Home'} onClick={() => setViewMode('Home')} icon="fa-house" />
           <NavTab label="Trainees" active={viewMode === 'List'} onClick={() => setViewMode('List')} icon="fa-users" />
           <NavTab label="Analytics" active={viewMode === 'Analytics'} onClick={() => setViewMode('Analytics')} icon="fa-chart-pie" />
+          <NavTab label="Offers" active={viewMode === 'Offers'} onClick={() => setViewMode('Offers')} icon="fa-file-signature" />
           {isAdmin && <NavTab label="Recruitment" active={viewMode === 'Pipeline'} onClick={() => setViewMode('Pipeline')} icon="fa-briefcase" />}
           {isAdmin && <NavTab label="System Config" active={viewMode === 'Settings'} onClick={() => setViewMode('Settings')} icon="fa-gears" />}
         </div>
@@ -142,6 +149,10 @@ const App: React.FC = () => {
 
         {viewMode === 'Pipeline' && isAdmin && (
           <JobPipeline companies={companies} isAdmin={isAdmin} />
+        )}
+
+        {viewMode === 'Offers' && (
+          <DigitalOffers portfolios={portfolios} openings={openings} companies={companies} isAdmin={isAdmin} />
         )}
 
         {viewMode === 'Settings' && isAdmin && (

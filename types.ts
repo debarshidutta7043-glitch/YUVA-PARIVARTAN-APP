@@ -1,4 +1,5 @@
 
+
 export type Department = {
   id: string;
   name: string;
@@ -15,6 +16,7 @@ export type EmploymentType = 'Full-time' | 'Contract' | 'Apprenticeship';
 export type SalaryBand = '₹8k–₹12k' | '₹12k–₹18k' | '₹18k+';
 export type RecruitmentStatus = 'Planned' | 'Interview Ongoing' | 'Offers Released' | 'Joining Completed';
 export type OfferStatus = 'Pending' | 'Accepted' | 'Rejected' | 'Expired';
+export type AvailabilityType = 'Full-time' | 'Part-time' | 'Shift work';
 
 export interface StudentSkill {
   name: string;
@@ -95,8 +97,16 @@ export interface StudentPortfolio {
   educationLevel: '10th' | '12th' | 'ITI' | 'Diploma' | 'Graduate';
   instituteName: string;
   passingYear: string;
+  // Fix: Added missing education properties
+  studiedMaths: boolean;
+  studiedEnglish: boolean;
+  studiedComputers: boolean;
 
   basicComputerKnowledge: boolean;
+  // Fix: Added optional computer literacy details
+  knowsTyping?: boolean;
+  knowsMouseKeyboard?: boolean;
+  knowsFileHandling?: boolean;
   softwareKnown: string[];
   typingSpeed: 'Below 20 WPM' | '20–30' | '30+';
 
@@ -107,6 +117,10 @@ export interface StudentPortfolio {
   };
 
   experience: 'Farm work' | 'Shop helper' | 'Office helper' | 'None';
+  // Fix: Added job readiness/availability properties
+  willingToLearn: boolean;
+  availability: AvailabilityType;
+
   documents: {
     aadhaar: boolean;
     bankAccount: boolean;
@@ -121,6 +135,12 @@ export interface StudentPortfolio {
   monthlySalary?: number;
   salaryBand?: SalaryBand;
   unplacedReason?: string;
+  // Fix: Added missing placement properties
+  placementCity?: string;
+  joiningDate?: string;
+  incentives?: boolean;
+  accommodation?: boolean;
+  certificateUrl?: string;
 
   bio: string;
   skills: StudentSkill[];
